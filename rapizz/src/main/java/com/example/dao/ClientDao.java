@@ -42,4 +42,28 @@ public class ClientDao {
         return clients;
     }
 
+
+    public boolean add(Client client) {
+        String sql = "INSERT INTO Clients (email, phoneNumber, firstName, lastName, address, password_hash, balance) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setString(1, client.getEmail());
+            stmt.setString(2, client.getPhoneNumber());
+            stmt.setString(3, client.getFirstName());
+            stmt.setString(4, client.getLastName());
+            stmt.setString(5, client.getAddress());
+            stmt.setString(6, "password123");
+            stmt.setDouble(7, client.getBalance());
+            
+            int rowsInserted = stmt.executeUpdate();
+            return rowsInserted > 0;
+            
+        } catch (SQLException e) {
+            System.err.println("Erreur SQL lors de l'ajout : " + e.getMessage());
+            return false;
+        }
+    }
+
 }
