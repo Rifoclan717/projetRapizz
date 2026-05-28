@@ -1,19 +1,21 @@
 package com.example;
 
-import java.sql.Connection;
+import com.example.views.ClientWindow;
+import com.example.views.MenuWindow;
 
-import com.example.repositories.DatabaseConnection;
+import javax.swing.SwingUtilities;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        Connection conn = DatabaseConnection.getInstance();
-        
-        System.out.println( "Hello World!" );
+public class App {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // ClientWindow window = new ClientWindow();
+                // window.setVisible(true);
+                
+                MenuWindow window = new MenuWindow();
+                window.setVisible(true);
+            }
+        });
     }
 }

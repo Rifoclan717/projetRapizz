@@ -5,14 +5,19 @@ public class DeliveryGuy {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private boolean canBike;
+    private boolean canDrive;
 
+    
     public DeliveryGuy() {}
 
-    public DeliveryGuy(int id, String firstName, String lastName, String phoneNumber) {
+    public DeliveryGuy(int id, String firstName, String lastName, String phoneNumber, boolean canBike, boolean canDrive) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
+        this.canBike = canBike;
+        this.canDrive = canDrive;
     }
 
     public int getId() { return id; }
@@ -26,4 +31,18 @@ public class DeliveryGuy {
 
     public String getPhoneNumber() { return phoneNumber; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public boolean isCanBike() {
+    return canBike;
+    }
+    public void setCanBike(boolean canBike) {
+        this.canBike = canBike;
+    }
+    public boolean isCanDrive() {
+        return canDrive;
+    }
+    public void setCanDrive(boolean canDrive) {
+        this.canDrive = canDrive;
+}
+
 }

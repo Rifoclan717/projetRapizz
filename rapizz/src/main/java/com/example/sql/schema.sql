@@ -30,6 +30,7 @@ create table Clients(
     lastName varchar(100),
     address varchar(500),
     password_hash varchar(255) not null,
+    balance DECIMAL(10,2) NOT NULL DEFAULT 0.00, 
     unique key uq_clients_email (email),
     key idx_clients_phoneNumber (phoneNumber)
 );
@@ -79,3 +80,4 @@ create table OrderProduct(
     constraint fk_orderproduct_order foreign key (orderId) references Orders(id) on delete cascade,
     constraint fk_orderproduct_product foreign key (productId) references Products(id) on delete cascade
 );
+
