@@ -74,6 +74,7 @@ create table OrderProduct(
     orderId int not null,
     productId int not null,
     quantity int not null,
+    size enum('naine','humaine','ogresse') not null,
     primary key (orderId, productId),
     key idx_orderproduct_productId (productId),
     constraint chk_orderproduct_quantity_positive check (quantity >= 1),

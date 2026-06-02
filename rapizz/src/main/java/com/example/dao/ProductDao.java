@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.model.DeliveryGuy;
 import com.example.model.Product;
 import com.example.repositories.DatabaseConnection;
 
@@ -19,7 +18,7 @@ public class ProductDao {
 
         List<Product> products = new ArrayList<>();
 
-                String sql = "SELECT id, name, basePrice FROM products";
+                String sql = "SELECT id, name, basePrice FROM Products";
 
                 try (Connection conn = DatabaseConnection.getInstance();
                     PreparedStatement stmt = conn.prepareStatement(sql);

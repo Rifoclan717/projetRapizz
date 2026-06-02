@@ -16,7 +16,7 @@ public class DeliveryGuyDao {
 
         List<DeliveryGuy> deliveryGuys = new ArrayList<>();
 
-        String sql = "SELECT id, firstName, lastName, canBike, canDrive FROM drivers";
+        String sql = "SELECT id, firstName, lastName, canBike, canDrive FROM Drivers";
 
         try (Connection conn = DatabaseConnection.getInstance();
              PreparedStatement stmt = conn.prepareStatement(sql);

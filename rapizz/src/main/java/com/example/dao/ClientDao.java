@@ -1,9 +1,6 @@
 package com.example.dao;
 
 
-import com.example.model.Client;
-import com.example.repositories.DatabaseConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,13 +8,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.model.Client;
+import com.example.repositories.DatabaseConnection;
+
 public class ClientDao {
 
     public List<Client> getClients() {
         List<Client> clients = new ArrayList<>();
         
        
-        String sql = "SELECT id, email, phoneNumber, firstName, lastName, address, balance FROM clients";
+        String sql = "SELECT id, email, phoneNumber, firstName, lastName, address, balance FROM Clients";
 
         try (Connection conn = DatabaseConnection.getInstance();
              PreparedStatement stmt = conn.prepareStatement(sql);

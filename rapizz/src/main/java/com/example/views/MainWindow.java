@@ -22,10 +22,12 @@ public class MainWindow extends JFrame {
         JButton btnMenu = new JButton("Voir la carte des Pizzas");
         JButton btnClients = new JButton("Voir la liste des Clients");
         JButton btnAddClient = new JButton("Ajouter un nouveau Client");
+        JButton btnOrder = new JButton("Passer une commande");
 
         add(btnMenu);
         add(btnClients);
         add(btnAddClient);
+        add(btnOrder);
 
 
         btnMenu.addActionListener(new ActionListener() {
@@ -46,6 +48,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new AddClientWindow().setVisible(true);
+            }
+        });
+
+        btnOrder.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new OrderWindow().setVisible(true);
             }
         });
     }

@@ -1,7 +1,7 @@
 package com.example.repositories;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,12 +37,11 @@ public class DatabaseConnection {
     private static Properties loadProperties() {
         Properties properties = new Properties();
         
-        // !!!!!! Seulement temporaire pour tester, quand on  rendra le projet faudra utilise un classLoader (si on le met en .jar bien sur) !!!!!!!!!!!
-        String cheminFichier = "rapizz/src/main/resources/db.properties";        
-        try (FileInputStream input = new FileInputStream(cheminFichier)) {
+        InputStream input = DatabaseConnection.class.getClassLoader().getResourceAsStream("db.properties");
+        try {
             properties.load(input);
         } catch (IOException e) {
-            throw new RuntimeException("impossible de trouver le fichier: " + cheminFichier, e);
+            throw new RuntimeException("impossible de trouver le fichier: " + input, e);
         }
         
         return properties;
