@@ -4,6 +4,8 @@ public class Product {
     private int id;
     private String name;
     private double basePrice;
+    private String ingredients;
+
 
     public Product() {}
 
@@ -12,7 +14,9 @@ public class Product {
         this.name = name;
         this.basePrice = basePrice;
     }
-
+    public String getIngredients() { return ingredients; }
+    public void setIngredients(String ingredients) { this.ingredients = ingredients; }
+    
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

@@ -66,4 +66,14 @@ public class ClientDao {
         }
     }
 
+    public boolean updateBalance(Connection conn, int clientId, double newBalance) throws SQLException {
+        String sql = "UPDATE Clients SET balance = ? WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, newBalance);
+            stmt.setInt(2, clientId);
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        }
+    }
+
 }

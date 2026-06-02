@@ -43,5 +43,28 @@ public class DeliveryGuyDao {
         return deliveryGuys;
     }
 
+    public DeliveryGuy getFreeDriver() {
+        String sql = "SELECT id, firstName, lastName, canBike, canDrive FROM Drivers " +
+                     "WHERE id NOT IN (SELECT driverId FROM Orders WHERE deliveryTime IS NULL) " +
+                     "LIMIT 1";
 
+        try (Connection conn = DatabaseConnection.getInstance();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                DeliveryGuy deliveryGuy = new DeliveryGuy();
+                deliveryGuy.setId(rs.getInt("id"));
+                deliveryGuy.setFirstName(rs.getString("firstName"));
+                deliveryGuy.setLastName(rs.getString("lastName"));
+                deliveryGuy.setCanBike(rs.getBoolean("canBike"));
+                deliveryGuy.setCanDrive(rs.getBoolean("canDrive"));
+                return deliveryGuy;
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur SQL lors de la recherche du livreur libre : " + e.getMessage());
+        }
+
+        return null;
+    }
 }

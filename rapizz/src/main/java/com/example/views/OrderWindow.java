@@ -29,11 +29,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.example.dao.ClientDao;
+import com.example.dao.DeliveryGuyDao;
 import com.example.dao.OrderDao;
 import com.example.dao.OrderProductDao;
 import com.example.dao.ProductDao;
+import com.example.dao.VehicleDao;
 import com.example.model.Client;
+import com.example.model.DeliveryGuy;
 import com.example.model.Product;
+import com.example.model.Vehicle;
 import com.example.repositories.DatabaseConnection;
 
 public class OrderWindow extends JFrame {
@@ -57,6 +61,8 @@ public class OrderWindow extends JFrame {
     private final DecimalFormat money = new DecimalFormat("0.00"); 
     private final OrderDao orderDao = new OrderDao();
     private final OrderProductDao orderProductDao = new OrderProductDao();
+    private final DeliveryGuyDao deliveryGuyDao = new DeliveryGuyDao();
+    private final VehicleDao vehicleDao = new VehicleDao();
 
     private enum Size {
         NAINE("Naine", 2.0 / 3.0),
@@ -260,22 +266,41 @@ public class OrderWindow extends JFrame {
 
         double unit = product.getBasePrice() * size.multiplier;
         double total = unit * qty;
+        
+        if (client.getBalance() < total) {
+            JOptionPane.showMessageDialog(this, "Solde insuffisant pour cette commande.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DeliveryGuy freeDriver = deliveryGuyDao.getFreeDriver();
+        if (freeDriver == null) {
+            JOptionPane.showMessageDialog(this, "Aucun livreur disponible pour le moment.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Vehicle freeVehicle = vehicleDao.getFreeVehicle();
+        if (freeVehicle == null) {
+            JOptionPane.showMessageDialog(this, "Aucun véhicule disponible pour le moment.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         String recap = "Commande :\n\n"
                 + "Client: " + displayClient(client) + "\n"
+                + "Solde à déduire: " + money.format(total) + " €\n"
                 + "Produit: " + displayProduct(product) + "\n"
                 + "Taille: " + size.label + "\n"
                 + "Prix unitaire: " + money.format(unit) + " €\n"
                 + "Quantité: " + qty + "\n"
                 + "Total: " + money.format(total) + " €\n\n"
+                + "Livreur assigné: " + freeDriver.getFirstName() + " " + freeDriver.getLastName() + "\n"
+                + "Véhicule assigné: " + freeVehicle.getNumberPlate() + " (" + freeVehicle.getVehicleType() + ")\n\n"
                 + "Confirmer ?";
 
         int choice = JOptionPane.showConfirmDialog(this, recap, "Confirmation", JOptionPane.OK_CANCEL_OPTION);
         if (choice == JOptionPane.OK_OPTION) {
 
-            // Todo : Select free driver + vehicle
-            int driverId = 1;
-            int vehicleId = 1;
+            int driverId = freeDriver.getId();
+            int vehicleId = freeVehicle.getId();
 
             String sizeDb = switch (size) {
                 case NAINE -> "naine";
@@ -286,6 +311,9 @@ public class OrderWindow extends JFrame {
             Connection conn = DatabaseConnection.getInstance();
             try {
                 conn.setAutoCommit(false);
+
+                // Déduire le solde du client
+                clientDao.updateBalance(conn, client.getId(), client.getBalance() - total);
 
                 int orderId = orderDao.insertOrder(conn, client.getId(), driverId, vehicleId);
                 orderProductDao.insertOrderProduct(conn, orderId, product.getId(), qty, sizeDb);

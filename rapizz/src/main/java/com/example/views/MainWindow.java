@@ -9,11 +9,11 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         setTitle("RaPizz - Tableau de Bord");
-        setSize(400, 300);
+        setSize(400, 350);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         setLocationRelativeTo(null);
         
-        setLayout(new GridLayout(4, 1, 10, 10));
+        setLayout(new GridLayout(5, 1, 10, 10));
 
         JLabel lblTitle = new JLabel("Gestion de la Pizzeria", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
@@ -23,11 +23,13 @@ public class MainWindow extends JFrame {
         JButton btnClients = new JButton("Voir la liste des Clients");
         JButton btnAddClient = new JButton("Ajouter un nouveau Client");
         JButton btnOrder = new JButton("Passer une commande");
+        JButton btnTickets = new JButton("Voir les fiches de livraison");
 
         add(btnMenu);
         add(btnClients);
         add(btnAddClient);
         add(btnOrder);
+        add(btnTickets);
 
 
         btnMenu.addActionListener(new ActionListener() {
@@ -55,6 +57,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new OrderWindow().setVisible(true);
+            }
+        });
+
+        btnTickets.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DeliveryTicketsWindow().setVisible(true);
             }
         });
     }
