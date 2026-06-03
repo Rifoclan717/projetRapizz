@@ -1,9 +1,14 @@
 package com.example.views;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 public class MainWindow extends JFrame {
 
@@ -24,12 +29,14 @@ public class MainWindow extends JFrame {
         JButton btnAddClient = new JButton("Ajouter un nouveau Client");
         JButton btnOrder = new JButton("Passer une commande");
         JButton btnTickets = new JButton("Voir les fiches de livraison");
+        JButton btnDriverRank = new JButton("Voir le classement des livreurs");
 
         add(btnMenu);
         add(btnClients);
         add(btnAddClient);
         add(btnOrder);
         add(btnTickets);
+        add(btnDriverRank);
 
 
         btnMenu.addActionListener(new ActionListener() {
@@ -64,6 +71,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new DeliveryTicketsWindow().setVisible(true);
+            }
+        });
+
+        btnDriverRank.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new DriverRankingWindow().setVisible(true);
             }
         });
     }

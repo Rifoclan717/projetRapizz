@@ -67,4 +67,116 @@ public class DeliveryGuyDao {
 
         return null;
     }
+
+    public static class DriverRankRow {
+        private final int driverId;
+        private final String driverName;
+        private final int onTimeDeliveries;
+        private final int lateDeliveries;
+        private final int deliveredTotal;
+        private final double onTimePct;
+        private final String mostUsedPlateNumber;
+
+        public DriverRankRow(int driverId, String driverName, int onTimeDeliveries, int lateDeliveries, int deliveredTotal, double onTimePct, String mostUsedPlateNumber) {
+            this.driverId = driverId;
+            this.driverName = driverName;
+            this.onTimeDeliveries = onTimeDeliveries;
+            this.lateDeliveries = lateDeliveries;
+            this.deliveredTotal = deliveredTotal;
+            this.onTimePct = onTimePct;
+            this.mostUsedPlateNumber = mostUsedPlateNumber;
+        }
+
+        public int getDriverId() { return driverId; }
+        public String getDriverName() { return driverName; }
+        public int getOnTimeDeliveries() { return onTimeDeliveries; }
+        public int getLateDeliveries() { return lateDeliveries; }
+        public int getDeliveredTotal() { return deliveredTotal; }
+        public double getOnTimePct() { return onTimePct; }
+        public String getMostUsedPlateNumber() { return mostUsedPlateNumber; }
+    }
+
+    public enum DriverRankingSort {
+        ON_TIME_PCT,
+        ON_TIME_COUNT,
+        DELIVERED_TOTAL
+    }
+
+    public List<DriverRankRow> getDriverRanking(DriverRankingSort sort) {
+        String orderBy;
+        switch (sort) {
+            case ON_TIME_COUNT:
+                orderBy = "on_time DESC, delivered_total DESC, on_time_pct DESC, driver_name ASC";
+                break;
+            case DELIVERED_TOTAL:
+                orderBy = "delivered_total DESC, on_time_pct DESC, on_time DESC, driver_name ASC";
+                break;
+            case ON_TIME_PCT:
+            default:
+                orderBy = "on_time_pct DESC, delivered_total DESC, on_time DESC, driver_name ASC";
+                break;
+        }
+
+        String sql =
+            "SELECT d.id, CONCAT(d.firstName, ' ', d.lastName) AS driver_name, " +
+            "       COALESCE(SUM(CASE " +
+            "           WHEN o.deliveryTime IS NOT NULL " +
+            "            AND o.orderDate IS NOT NULL " +
+            "            AND TIMESTAMPDIFF(MINUTE, o.orderDate, o.deliveryTime) <= 30 " +
+            "           THEN 1 ELSE 0 END), 0) AS on_time, " +
+            "       COALESCE(SUM(CASE " +
+            "           WHEN o.deliveryTime IS NOT NULL " +
+            "            AND o.orderDate IS NOT NULL " +
+            "            AND TIMESTAMPDIFF(MINUTE, o.orderDate, o.deliveryTime) > 30 " +
+            "           THEN 1 ELSE 0 END), 0) AS late, " +
+            "       COALESCE(SUM(CASE WHEN o.deliveryTime IS NOT NULL THEN 1 ELSE 0 END), 0) AS delivered_total, " +
+            "       CASE " +
+            "           WHEN COALESCE(SUM(CASE WHEN o.deliveryTime IS NOT NULL THEN 1 ELSE 0 END), 0) = 0 THEN 0 " +
+            "           ELSE ROUND(100.0 * " +
+            "               COALESCE(SUM(CASE " +
+            "                   WHEN o.deliveryTime IS NOT NULL " +
+            "                    AND o.orderDate IS NOT NULL " +
+            "                    AND TIMESTAMPDIFF(MINUTE, o.orderDate, o.deliveryTime) <= 30 " +
+            "                   THEN 1 ELSE 0 END), 0) " +
+            "               / COALESCE(SUM(CASE WHEN o.deliveryTime IS NOT NULL THEN 1 ELSE 0 END), 0), " +
+            "           2) " +
+            "       END AS on_time_pct, " +
+            "       COALESCE( " +
+            "           (SELECT v2.plateNumber " +
+            "            FROM Orders o2 " +
+            "            JOIN Vehicles v2 ON v2.id = o2.vehicleId " +
+            "            WHERE o2.driverId = d.id " +
+            "              AND o2.deliveryTime IS NOT NULL " +
+            "            GROUP BY v2.id, v2.plateNumber " +
+            "            ORDER BY COUNT(*) DESC, v2.plateNumber ASC " +
+            "            LIMIT 1), " +
+            "           '—' " +
+            "       ) AS most_used_plate " +
+            "FROM Drivers d " +
+            "LEFT JOIN Orders o ON o.driverId = d.id " +
+            "GROUP BY d.id, d.firstName, d.lastName " +
+            "ORDER BY " + orderBy;
+
+        List<DriverRankRow> rows = new ArrayList<>();
+
+        try (Connection c = DatabaseConnection.getInstance();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("driver_name");
+                int onTime = rs.getInt("on_time");
+                int late = rs.getInt("late");
+                int total = rs.getInt("delivered_total");
+                double pct = rs.getDouble("on_time_pct");
+                String plate = rs.getString("most_used_plate");
+                rows.add(new DriverRankRow(id, name, onTime, late, total, pct, plate));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du chargement du classement des livreurs", e);
+        }
+
+        return rows;
+    }
 }
