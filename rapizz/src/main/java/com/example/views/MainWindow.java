@@ -14,11 +14,11 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         setTitle("RaPizz - Tableau de Bord");
-        setSize(400, 350);
+        setSize(400, 400); // Taille augmentée pour le nouveau bouton
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         setLocationRelativeTo(null);
         
-        setLayout(new GridLayout(5, 1, 10, 10));
+        setLayout(new GridLayout(8, 1, 10, 10)); // 8 lignes au lieu de 5
 
         JLabel lblTitle = new JLabel("Gestion de la Pizzeria", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Arial", Font.BOLD, 20));
@@ -30,6 +30,7 @@ public class MainWindow extends JFrame {
         JButton btnOrder = new JButton("Passer une commande");
         JButton btnTickets = new JButton("Voir les fiches de livraison");
         JButton btnDriverRank = new JButton("Voir le classement des livreurs");
+        JButton btnStats = new JButton("Voir les statistiques"); // Nouveau bouton
 
         add(btnMenu);
         add(btnClients);
@@ -37,7 +38,7 @@ public class MainWindow extends JFrame {
         add(btnOrder);
         add(btnTickets);
         add(btnDriverRank);
-
+        add(btnStats); // Ajout au layout
 
         btnMenu.addActionListener(new ActionListener() {
             @Override
@@ -78,6 +79,13 @@ public class MainWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new DriverRankingWindow().setVisible(true);
+            }
+        });
+
+        btnStats.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new StatsWindow().setVisible(true);
             }
         });
     }
